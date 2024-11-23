@@ -51,7 +51,7 @@ function check_version()
     local daidai_version_url = "http://check.cnsakura.top/stand/versions.txt"
 
     local GT_github_url = "https://gh.jasonzeng.dev/https://raw.githubusercontent.com/zeblyo/GTA-Stand-Lua-Scripts-Crack/refs/heads/main/versions.txt"
-    local GT_version_url = "http://111.180.201.144:14502/down/LWW204lPUTtX.lua"
+    local GT_version_url = "http://111.180.201.144:14502/down/RBcE4d6fZhfV.lua"
 
     -- 定义变量以存储版本信息
     local daidai_github_version = nil
