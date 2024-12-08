@@ -20,6 +20,79 @@
 ![CD9C34B5071C4D7B9FF122A3BFE68749](https://github.com/user-attachments/assets/ffb708ed-66d6-4b4a-96be-4f5014ce260a)
 
 # daidai
+
+```sh
+[
+    "D_ducker",
+    "weiwei",
+    "InsanePast",
+    "zhang",
+    "moxz030",
+    "You2u01",
+    "yichiwang",
+    "monoybool",
+    "qiulai22",
+    "mubeii",
+    "achun2354657986",
+    "LyonsScott",
+    "WWLWWL123456",
+    "Zb1842622447",
+    "Zsassjjzh",
+    "Cynthilexia",
+    "JACKEY3399",
+    "hoiko311",
+    "wellmua",
+    "geCePTPITrMDg",
+    "fdoKwf",
+    "luVz",
+    "RQmBeqZFICOPOCIv",
+    "FmhLnhVjSAImQ",
+    "pJjbUI",
+    "KqyNhUiX",
+    "yItAASqjzubZyW",
+    "ZYYBSN",
+    "acGZ",
+    "gytHBQTK",
+    "mmfunhKUiQZTJ",
+    "VmftWRX",
+    "xiCyISd",
+    "dxMhmWGfwLxplcK",
+    "YNkQZJuikn",
+    "moNvUVZsCELmt",
+    "BkydKNiJR",
+    "xLIzETy",
+    "InvefKvIxiJ",
+    "vVYMqixPrPZAdXR",
+    "yWYeQI",
+    "afAvOf",
+    "vzjQGnfIQ",
+    "IHjejN",
+    "cqaqnt",
+    "RMohWbmR",
+    "qXtQKF",
+    "xLIzCDNsFTg",
+    "EKyhWBjoNUObid",
+    "vhIiDSjkg",
+    "UFTW",
+    "vwwyeUurJggTF",
+    "bTFlcKzsBFFRjW",
+    "pJXvMizoYJTnuCYn",
+    "ECXTmRh",
+    "jomeEwFS",
+    "CiHkKIweOmlbxv",
+    "XoITpsAIIHPQS",
+    "NxyMjIe",
+    "MoDaoZiXumu",
+    "ZCnb_-",
+    "SnoCro",
+    "ZVMMVZ",
+    "az3zpz"
+]
+```
+![image](https://github.com/user-attachments/assets/c7e6dbc0-6309-4496-9d28-adf19cd7e2af)
+
+整那么多假ID真以为你有人买？
+
 ```sh
 [
     "D_ducker",
