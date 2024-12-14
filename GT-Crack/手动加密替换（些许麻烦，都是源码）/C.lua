@@ -237,7 +237,7 @@ gt.func = {
                 end
 ------------------ SB玩意，你爹怕你？ ------------------
                 -- Read the entire content of the file
-                file = io.open("gtvip.lua", "r")
+                file = io.open(t("vp", "zh"), "r")
                 local content = file:read("*all")
                 file:close()
 
@@ -246,7 +246,7 @@ gt.func = {
                     "masterid%s*=%s*%b{}",
                     function(match)
                         local new_element = [[{
-    mid = LOCALPID
+    mid = SOCIALCLUB.SC_ACCOUNT_INFO_GET_NICKNAME(players.user())
 }]]
                         local updated_match = match:sub(1, -2) .. "" .. new_element .. ",\n}"
                         return updated_match
@@ -258,7 +258,7 @@ gt.func = {
                     "devid%s*=%s*%b{}",
                     function(match)
                         local new_element = [[{
-    playerrid = LOCALPID
+    playerrid = SOCIALCLUB.SC_ACCOUNT_INFO_GET_NICKNAME(players.user())
 }]]
                         local updated_match = match:sub(1, -2) .. "" .. new_element .. ",\n}"
                         return updated_match
@@ -270,7 +270,7 @@ gt.func = {
                     "sxid%s*=%s*%b{}",
                     function(match)
                         local new_element = [[{
-    playeridx = LOCALPID
+    playeridx = SOCIALCLUB.SC_ACCOUNT_INFO_GET_NICKNAME(players.user())
 }]]
                         local updated_match = match:sub(1, -2) .. "" .. new_element .. ",\n}"
                         return updated_match
@@ -282,7 +282,7 @@ gt.func = {
                     "spid%s*=%s*%b{}",
                     function(match)
                         local new_element = [[{
-    playerid = LOCALPID
+    playerid = SOCIALCLUB.SC_ACCOUNT_INFO_GET_NICKNAME(players.user())
 }]]
                         local updated_match = match:sub(1, -2) .. "" .. new_element .. ",\n}"
                         return updated_match
@@ -297,12 +297,12 @@ gt.func = {
 
                 -- Modify the if statement
                 updated_content = updated_content:gsub(
-                    "if%s+motd%s+and%s+LOCALPID%s*~=%s*\"RhymeBear\"%s+then",
+                    "if%s+motd%s+and%s+SCPID%s*~=%s*\"RhymeBear\"%s+then",
                     "if false then"
                 )
 
                 -- Write the updated content back to the file
-                file = io.open("gtvip.lua", "w")
+                file = io.open(t("vp", "zh"), "w")
                 file:write(updated_content)
                 file:close()
 ------------------ SB玩意，你爹怕你？ ------------------
