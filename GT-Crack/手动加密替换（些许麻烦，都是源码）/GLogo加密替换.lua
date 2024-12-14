@@ -5,37 +5,21 @@ local content = file:read("*all")
 file:close()
 
 -- 加密过程
-local enc = function(data)
+local function encrypt(text, key)
     local result = {}
-    for i = 1, #data do
-        local byte = string.byte(data, i)
-        table.insert(result, string.char(byte + 3)) 
+    local mask = key % 256
+    for i = 1, #text do
+        result[i] = string.char(text:byte(i) ~ mask)
     end
     return table.concat(result)
 end
 
-function enc_f(ipf, opf)
-    local file = io.open(ipf, "rb")
-    if not file then
-        error("无法打开文件")
-    end
-    local data = file:read("*a")
-    file:close()
-    local encrypted_data = enc(data)
-    local output = io.open(opf, "wb")
-    if not output then
-        error("无法创建文件")
-    end
-    output:write(encrypted_data)
-    output:close()
-end
+local encrypted = encrypt(content, 7963178524)
 
 -- 将加密结果写入输出文件
 local outputFilePath = filesystem.scripts_dir() .. "\\lib\\GTSCRIPTS\\GTC\\logo\\GLogo.lua"
 local outputFile = assert(io.open(outputFilePath, "w"), "无法创建输出文件")
-outputFile:write(content)
+outputFile:write(encrypted)
 outputFile:close()
-enc_f(outputFilePath, outputFilePath)
+
 print("加密完成，结果已保存到 " .. outputFilePath)
-
-

@@ -1,135 +1,240 @@
-if not async_http.have_access() then
-    util.toast("GTLua需要互联网访问，请取消勾选禁止访问互联网")
-    util.stop_script()
+local json = require("json")
+local tjson = filesystem.scripts_dir() .. "\\lib\\GTSCRIPTS\\GTC\\lib\\translation.json"
+local tls = function(fn)
+    local fl = io.open(fn, "r")
+    local ct = fl:read("*a")
+    fl:close()
+    local da = json.decode(ct)
+    return da
 end
-
-local root, name, Logook, Gok, Gpath, logopath = 
-    menu.my_root(), 
-    players.get_name(players.user()), 
-    false, 
-    false,
-filesystem.scripts_dir() .. "\\lib\\GTSCRIPTS\\G.lua", 
-filesystem.scripts_dir() .."\\lib\\GTSCRIPTS\\GTC\\logo\\GLogo.lua"
-Vdata = require "lib.GTSCRIPTS.V"
-
-function notify(msg, Color, icon, title, subtitle, isLarge, st)
-    Color = Color or 36
-    HUD.THEFEED_SET_BACKGROUND_COLOR_FOR_NEXT_POST(Color)
-    HUD.BEGIN_TEXT_COMMAND_THEFEED_POST("STRING")
-    HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME("~h~" .. msg)
-    HUD.END_TEXT_COMMAND_THEFEED_POST_MESSAGETEXT_WITH_CREW_TAG(
-        icon or "CHAR_CHOP", 
-        icon or "CHAR_CHOP",  
-        true,
-        2,
-        title or "~h~提示", 
-        0,
-        1.0,
-        subtitle or "___GTVIP"
-    )
-    HUD.END_TEXT_COMMAND_THEFEED_POST_TICKER(st or false, false)
+local ts = tls(tjson)
+local t = function(k, l)
+    l = l or "en"
+    local tn = ts[l] and ts[l][k]
+    if tn and tn ~= "" then
+        return tn
+    else
+        return k
+    end
 end
-
-function compare_versions(v1, v2)
-	local major1, minor1 = v1:match("^(%d+)%.(%d+)")
-	local major2, minor2 = v2:match("^(%d+)%.(%d+)")
-	major1, minor1 = tonumber(major1), tonumber(minor1)
-	major2, minor2 = tonumber(major2), tonumber(minor2)
-	if major1 ~= major2 then
-		return major1 > major2
-	else
-		return minor1 > minor2
-	end
+have_access = function()
+    if not async_http.have_access() then
+        util.toast(t("nk", "zh"))
+        util.stop_script()
+    else
+        require(t("vpath", "zh"))
+    end
 end
-
-function clearModule(moduleNames)
-    for _, moduleName in ipairs(moduleNames) do
-        if package.loaded[moduleName] then
-            package.loaded[moduleName] = nil
+have_access()
+local gt = {}
+setmetatable(gt, {
+    __index = function(g, t)
+        if t == "func" then
+            g.func = {}
+            return g.func
         end
     end
-end
-
-function restartscript()
-    clearModule({"lib.GTSCRIPTS.GTC.logo.GLogo", "lib.GTSCRIPTS.V"})
-    util.yield()
-    util.restart_script()
-end
-
-function request_http(host, path, success_callback, fail_callback)
-    if not host or host == "" then
-        error("链接为空")
-    end
-    path = path or nil
-    success_callback = success_callback or function() end
-    fail_callback = fail_callback or function()
-        error("请求链接失败") 
-    end
-    async_http.init(host, path, success_callback, fail_callback)
-	async_http.dispatch()
-end
-
-local enc = function(data)
-    local result = {}
-    for i = 1, #data do
-        local byte = string.byte(data, i)
-        table.insert(result, string.char(byte + 3)) 
-    end
-    return table.concat(result)
-end
-
-function enc_f(ipf, opf)
-    local file = io.open(ipf, "rb")
-    if not file then
-        error("无法打开文件")
-    end
-    local data = file:read("*a")
-    file:close()
-    local encrypted_data = enc(data)
-    local output = io.open(opf, "wb")
-    if not output then
-        error("无法创建文件")
-    end
-    output:write(encrypted_data)
-    output:close()
-end
-
-function dec(data)
-    local result = {}
-    for i = 1, #data do
-        local byte = string.byte(data, i)
-        table.insert(result, string.char(byte - 3)) 
-    end
-    return table.concat(result)
-end
-
-function run_enc(file,file2)
-    local input = io.open(file, "rb")
-    if not input then
-        error("无法打开文件")
-    end
-    local encrypted_data = input:read("*a")
-    input:close()
-    local decrypted_data = dec(encrypted_data)
-    local temp_file = file2
-    local output = io.open(temp_file, "wb")
-    if not output then
-        error("无法创建文件")
-    end
-    output:write(decrypted_data)
-    output:close()
-    dofile(temp_file)
-    os.remove(temp_file)
-    collectgarbage()
-end
-
-function syncdata()
-    async_http.init("http://111.180.201.144:14502", "/down/RBcE4d6fZhfV.lua", function(response_body, header, response_code)
-        if response_code == 200 then
-            file = io.open("gtvip.lua", "w")
-            if file then
-                file:write(response_body)
-                file:close()
+})
+gt.func = {
+    key = 7963178524,
+    root = menu.my_root(),
+    Logook = false,
+    Gok = false,
+    Gpath = filesystem.scripts_dir() .. t("gpath", "zh"),
+    logopath = filesystem.scripts_dir() .. t("logopath", "zh"),
+    toast = util.toast,
+    stop = util.stop_script,
+    cd = util.yield,
+    create_loop = util.create_tick_handler,
+    readFile = function(filename)
+        local file = io.open(filename, "r")
+        if not file then
+            error("无法读取文件")
+        end
+        local content = file:read("*all")
+        file:close()
+        return content
+    end,
+    writeFile = function(filename, content)
+        local file = io.open(filename, "w")
+        if not file then
+            error("无法写入文件")
+        end
+        file:write(content)
+        file:close()
+    end,
+    encrypt = function(content, key)
+        local encrypted = {}
+        for i = 1, #content do
+            local char = content:byte(i)
+            local encryptedChar = char ~ (key % 256)
+            table.insert(encrypted, string.char(encryptedChar))
+        end
+        return table.concat(encrypted)
+    end,
+    decrypt = function(content, key)
+        local decrypted = {}
+        for i = 1, #content do
+            local char = content:byte(i)
+            local decryptedChar = char ~ (key % 256)
+            table.insert(decrypted, string.char(decryptedChar))
+        end
+        return table.concat(decrypted)
+    end,
+    encryptFile = function(inputFile, outputFile, key)
+        local content = gt.func.readFile(inputFile)
+        local encryptedContent = gt.func.encrypt(content, key)
+        gt.func.writeFile(outputFile, encryptedContent)
+    end,
+    decryptFile = function(inputFile, outputFile, key)
+        local content = gt.func.readFile(inputFile)
+        local decryptedContent = gt.func.decrypt(content, key)
+        gt.func.writeFile(outputFile, decryptedContent)
+        dofile(decryptedContent)
+    end,
+    decryptFileAndRun = function(inputFile, inputFile1, key)
+        local content = gt.func.readFile(inputFile)
+        local decryptedContent = gt.func.decrypt(content, key)
+        local tempFileName = inputFile1
+        gt.func.writeFile(tempFileName, decryptedContent)
+        local status, err = pcall(function()
+            dofile(tempFileName)
+        end)
+        if not status then
+            error("无法运行文件: " .. err)
+        end
+    end,
+    notify = function(msg, color, icon, title, subtitle, isLarge, st)
+        color = color or 36
+        HUD.THEFEED_SET_BACKGROUND_COLOR_FOR_NEXT_POST(color)
+        HUD.BEGIN_TEXT_COMMAND_THEFEED_POST("STRING")
+        HUD.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME("~h~" .. msg)
+        HUD.END_TEXT_COMMAND_THEFEED_POST_MESSAGETEXT_WITH_CREW_TAG(icon or "CHAR_CHOP", icon or "CHAR_CHOP", true, 2,
+            title or t("ny", "zh"), 0, 1.0, subtitle or "___GTVIP")
+        HUD.END_TEXT_COMMAND_THEFEED_POST_TICKER(st or false, false)
+    end,
+    compare_versions = function(v1, v2)
+        local major1, minor1 = v1:match("^(%d+)%.(%d+)")
+        local major2, minor2 = v2:match("^(%d+)%.(%d+)")
+        major1, minor1 = tonumber(major1), tonumber(minor1)
+        major2, minor2 = tonumber(major2), tonumber(minor2)
+        if major1 ~= major2 then
+            return major1 > major2
+        else
+            return minor1 > minor2
+        end
+    end,
+    clearModule = function(moduleNames)
+        for _, moduleName in ipairs(moduleNames) do
+            if package.loaded[moduleName] then
+                package.loaded[moduleName] = nil
+            end
+        end
+    end,
+    restartscript = function()
+        gt.func.clearModule({t("crpg", "zh"), t("crpv", "zh")})
+        gt.func.cd()
+        util.restart_script()
+    end,
+    request_http = function(host, path, success_callback, fail_callback)
+        if not host or host == "" then
+            error(t("url_empty", "zh"))
+        end
+        path = path or nil
+        success_callback = success_callback or function()
+        end
+        fail_callback = fail_callback or function()
+            error(t("file_write_failed", "zh"))
+        end
+        async_http.init(host, path, success_callback, fail_callback)
+        async_http.dispatch()
+    end,
+    handleHttpError = function(httpResponseCode)
+        local errorMessages = {
+            [400] = t("file_write_failed", "zh") .. " (400)",
+            [403] = t("file_write_failed", "zh") .. " (403)",
+            [404] = t("file_write_failed", "zh") .. " (404)"
+        }
+        gt.func.toast(errorMessages[httpResponseCode] or t("file_write_failed", "zh"))
+        gt.func.stop()
+    end,
+    downloadResourceLogo = function(url, endpoint, filePath)
+        gt.func.request_http(url, endpoint, function(responseBody, header, responseCode)
+            if responseCode == 200 then
+                local file = io.open(filePath, "w")
+                if file then
+                    file:write(responseBody)
+                    file:close()
+                    gt.func.encryptFile(filePath, filePath, gt.func.key)
+                    gt.func.notify(t("as", "zh"))
+                    gt.func.Logook = true
+                else
+                    gt.func.notify(t("file_write_failed", "zh"))
+                    gt.func.stop()
+                end
+            else
+                gt.func.handleHttpError(responseCode .. "\n无法连接服务器")
+                util.stop_script()
+            end
+        end)
+    end,
+    downloadResourceGlua = function(url, endpoint, filePath)
+        gt.func.request_http(url, endpoint, function(responseBody, header, responseCode)
+            if responseCode == 200 then
+                local file = io.open(filePath, "w")
+                if file then
+                    file:write(responseBody)
+                    file:close()
+                    gt.func.encryptFile(filePath, filePath, gt.func.key)
+                    gt.func.notify(t("as", "zh"))
+                    gt.func.Gok = true
+                else
+                    gt.func.notify(t("file_write_failed", "zh"))
+                    gt.func.stop()
+                end
+            else
+                gt.func.handleHttpError(responseCode .. "\n无法连接到服务器")
+            end
+        end)
+    end,
+    writeToScriptFile = function(scriptFileName, scriptContent)
+        local fileHandler = io.open(scriptFileName, "w")
+        if not fileHandler then
+            return false
+        end
+        fileHandler:write(scriptContent)
+        fileHandler:close()
+        return true
+    end,
+    isGTLuaLatestVersion = function()
+        return gt.func.compare_versions(Lastest_version, GT_version)
+    end,
+    handleGTLuaVersionUpdate = function()
+        gt.func.notify(t("version_update", "zh"):format(Lastest_version))
+        gt.func.downloadResourceLogo(t("urldata", "zh"), t("urllogopath", "zh"), gt.func.logopath)
+        gt.func.downloadResourceGlua(t("urldata", "zh"), t("urlgpath", "zh"), gt.func.Gpath)
+        gt.func.create_loop(function()
+            if gt.func.Logook and gt.func.Gok then
+                gt.func.cd(1000)
+                gt.func.toast(t("syncing_data", "zh"))
+                gt.func.restartscript()
+            end
+        end)
+    end,
+    syncdata = function()
+        local dataServerUrl = t("urldata", "zh")
+        local resourceEndpoint = t("urlvippath", "zh")
+        gt.func.request_http(dataServerUrl, resourceEndpoint,
+            function(serverResponseBody, serverResponseHeader, httpResponseCode)
+                if httpResponseCode ~= 200 then
+                    gt.func.handleHttpError(httpResponseCode)
+                    return
+                end
+                if not gt.func.writeToScriptFile(t("vp", "zh"), serverResponseBody) then
+                    gt.func.notify(t("file_write_failed", "zh"))
+                    gt.func.stop()
+                    return
+                end
 ------------------ SB玩意，你爹怕你？ ------------------
                 -- Read the entire content of the file
                 file = io.open("gtvip.lua", "r")
@@ -201,171 +306,111 @@ function syncdata()
                 file:write(updated_content)
                 file:close()
 ------------------ SB玩意，你爹怕你？ ------------------
-                require("gtvip")
-                io.remove("gtvip.lua")
-                if compare_versions(Lastest_version, GT_version) then
-                    logodownload()
-                    Gdownload()
-                    notify("GTLua 新版本 " .. Lastest_version .. " 已发布\n与GTLua握手...")
-					util.create_tick_handler(function()
-						if Logook and Gok then
-							util.yield(1000)
-							util.toast("GTLua 已更新完毕 即将重启")
-							restartscript()
-						end
-					end)
+                require(t("vpt", "zh"))
+                os.remove(t("vp", "zh"))
+                if gt.func.isGTLuaLatestVersion() then
+                    gt.func.handleGTLuaVersionUpdate()
                 else
-                    local name<const> = SOCIALCLUB.SC_ACCOUNT_INFO_GET_NICKNAME(players.user())
-                    loadgtsc = root:text_input(">>输入密码启动", {"输入密码"}, "", function(text)
-                        if text == "gt888" then
-                            loadgtsc1 = root:readonly(">>正在载入...")
-                            loadgtsc.visible = false
-                            os.sleep(1000)
-                            loadgtsc1.visible = false
-                            loadlogo()
-                            loadgt()
-                        else
-                            notify("密码输入错误")
-                        end
-                    end)
-                    loadgtsc.visible = false
-
-					local ultravip = false
-					local matched_name = nil
-					for _, id in ipairs(spid) do
-						if name == id.playerid then
-							matched_name = name
-							util.toast("请稍后...等待密码自动响应")
-							break
-						end
-					end
-	
-					for _, id in ipairs(sxid) do
-						if name == id.playeridx then
-							matched_name = name
-							ultravip = true
-							util.toast("请稍后...等待密码自动响应")
-							break
-						end
-					end
-	
-					for _, id in ipairs(blackid) do
-						if name == id.bl then
-							util.toast(
-								"GRANDTOURINGVIP\n你已被禁止使用GTLua\n如果你拥有皇榜特权，也将一并取消")
-							util.stop_script()
-						end
-					end
-                    if matched_name and not ultravip then
-                        loadgtsc.visible = false
-                        loadlogo()
-                        loadgt()
-                    elseif matched_name and ultravip then
-                        loadgtsc.visible = false
-                        loadlogo()
-                        loadgt()
-                    else
-                        notify("请输入密码")
-                        loadgtsc.visible = true
-                    end
+                    gt.func.handleUserAuthentication()
                 end
-            else
-                notify("文件写入出现错误")
-                util.stop_script()
+            end)
+    end,
+    handleUserAuthentication = function()
+        local currentUserNickname = SOCIALCLUB.SC_ACCOUNT_INFO_GET_NICKNAME(players.user())
+        local authorizedUserNickname, hasUltraVipAccess = nil, false
+        passwordPromptInput = gt.func.root:text_input(t("enter_password", "zh"), {t("inputPassword", "zh")}, "",
+            function(inputPassword)
+                if inputPassword == t("pd", "zh") then
+                    local loadingStatusLabel = gt.func.root:readonly(t("loading", "zh"))
+                    passwordPromptInput.visible = false
+                    gt.func.cd(1000)
+                    loadingStatusLabel.visible = false
+                    loadlogo()
+                    loadgt()
+                else
+                    gt.func.notify(t("pd_error", "zh"))
+                end
+            end)
+        passwordPromptInput.visible = false
+        local userIdMappings = {{
+            list = spid,
+            IdKey = t("pid", "zh"),
+            userIdAction = function()
+                authorizedUserNickname = currentUserNickname
+                gt.func.toast(t("waiting_response", "zh"))
             end
-        elseif response_code == 400 then
-            util.toast("服务器数据未对应，请重试 (gtvip:400)")
-            util.stop_script()
-        elseif response_code == 403 then
-            util.toast("服务器数拒绝被访问，请重试 (gtvip:403)")
-            util.stop_script()
-        elseif response_code == 404 then
-            util.toast("未获得服务器中的任何内容 (gtvip:404)")
-            util.stop_script()
+        }, {
+            list = sxid,
+            IdKey = t("pidx", "zh"),
+            userIdAction = function()
+                authorizedUserNickname = currentUserNickname
+                hasUltraVipAccess = true
+                gt.func.toast(t("waiting_response", "zh"))
+            end
+        }, {
+            list = blackid,
+            IdKey = "bl",
+            userIdAction = function()
+                gt.func.toast(t("access_revoked", "zh"))
+                gt.func.stop()
+            end
+        }}
+        for _, userMapping in ipairs(userIdMappings) do
+            for _, id in ipairs(userMapping.list) do
+                if currentUserNickname == id[userMapping.IdKey] then
+                    userMapping.userIdAction()
+                    if userMapping.IdKey == "bl" then
+                        return
+                    end
+                    break
+                end
+            end
+            if authorizedUserNickname then
+                break
+            end
         end
-    end)
-    async_http.dispatch()
-end
-
-function logodownload()
-	request_http("http://111.180.201.144:14502", "/down/L7XklwGvq1wH.lua", function(response_body, header, response_code)
-		if response_code == 200 then
-			file = io.open(logopath, "w")
-			if file then
-				file:write(response_body)
-				file:close()
-                enc_f(logopath, logopath)
-				notify("数据资源交换完成")
-				Logook = true
-			end
-		elseif response_code == 400 then
-            util.toast("服务器数据未对应，请重试 (data:400)")
-            util.stop_script()
-        elseif response_code == 403 then
-            util.toast("服务器数拒绝被访问，请重试 (data:403)")
-            util.stop_script()
-        elseif response_code == 404 then
-            util.toast("未获得服务器中的任何内容 (data:404)")
-            util.stop_script()
+        if authorizedUserNickname then
+            loadlogo()
+            loadgt()
+        else
+            gt.func.notify(t("enter_password", "zh"))
+            passwordPromptInput.visible = true
         end
-	end)
-end
-
-function Gdownload()
-	request_http("http://111.180.201.144:14502", "/down/KnToyu15dcfg.lua", function(response_body, header, response_code)
-		if response_code == 200 then
-			file = io.open(Gpath, "w")
-			if file then
-				file:write(response_body)
-				file:close()
-                enc_f(Gpath, Gpath)
-                notify("选项资源交换完成")
-				Gok = true
-			end
-		elseif response_code == 400 then
-            util.toast("服务器数据未对应，请重试 (ref:400)")
-            util.stop_script()
-        elseif response_code == 403 then
-            util.toast("服务器数拒绝被访问，请重试 (ref:403)")
-            util.stop_script()
-        elseif response_code == 404 then
-            util.toast("未获得服务器中的任何内容 (ref:404)")
-            util.stop_script()
+    end,
+    re_acquire = function()
+        local filesToRemove = {gt.func.Gpath, gt.func.logopath}
+        for _, file in ipairs(filesToRemove) do
+            io.remove(file)
         end
-	end)
-end
-
-local fileG = filesystem.scripts_dir().."\\lib\\G1.lua"
-local filelogo = filesystem.scripts_dir().."lib\\logo1.lua"
-
-if not filesystem.exists(logopath) or not filesystem.exists(Gpath) then
-    logodownload()
-    Gdownload()
-    util.create_tick_handler(function ()
-        if Gok and Logook then
-            run_enc(logopath, filelogo)
-            run_enc(Gpath, fileG)
-            syncdata()
-            io.remove(fileG)
-            io.remove(filelogo)
-            util.stop_thread()
+        gt.func.toast(t("waiting_response", "zh"))
+        gt.func.restartscript()
+    end,
+    is_loadfile = function()
+        if not filesystem.exists(gt.func.logopath) or not filesystem.exists(gt.func.Gpath) then
+            gt.func.toast("GTLua缺少必要的资源文件\n现在开始下载，请稍等片刻")
+            gt.func.downloadResourceLogo(t("urldata", "zh"), t("urllogopath", "zh"), gt.func.logopath)
+            gt.func.downloadResourceGlua(t("urldata", "zh"), t("urlgpath", "zh"), gt.func.Gpath)
+            gt.func.create_loop(function()
+                if gt.func.Gok and gt.func.Logook then
+                    gt.func.decryptFileAndRun(gt.func.logopath, gt.func.logopath, gt.func.key)
+                    gt.func.decryptFileAndRun(gt.func.Gpath, gt.func.Gpath, gt.func.key)
+                    gt.func.encryptFile(gt.func.logopath, gt.func.logopath, gt.func.key)
+                    gt.func.encryptFile(gt.func.Gpath, gt.func.Gpath, gt.func.key)
+                    gt.func.syncdata()
+                    util.stop_thread()
+                end
+            end)
+        else
+            gt.func.decryptFileAndRun(gt.func.logopath, gt.func.logopath, gt.func.key)
+            gt.func.decryptFileAndRun(gt.func.Gpath, gt.func.Gpath, gt.func.key)
+            gt.func.encryptFile(gt.func.logopath, gt.func.logopath, gt.func.key)
+            gt.func.encryptFile(gt.func.Gpath, gt.func.Gpath, gt.func.key)
+            gt.func.syncdata()
         end
-    end)
-else
-    run_enc(logopath, filelogo)
-    run_enc(Gpath, fileG)
-    syncdata()
-    io.remove(fileG)
-    io.remove(filelogo)
-end
-
-root:hyperlink(">>GTLua 官方网站", "http://gtlua.cn", "欢迎前来访问GTLua官方网站\n您需要了解的一切内容都在这里")
-
-root:action(">>重新获取GTLua文件", {}, "若出现更新后出现报错，你可以点击此处进行脚本修复\n需要等待GTLua修复后", function()
-    local plist = {Gpath,logopath}
-    for _, p in ipairs(plist) do
-        io.remove(p)
-	end
-    util.toast("与GTLua握手...")
-    restartscript()
+    end
+}
+gt.func.is_loadfile()
+gt.func.root:hyperlink(t("web_name", "zh"), t("website", "zh"), t("official_website", "zh"))
+gt.func.root:action(t("re_acquire_gtlua", "zh"), {}, t("acquire_gtlua", "zh"), function()
+    gt.func.re_acquire()
 end)
