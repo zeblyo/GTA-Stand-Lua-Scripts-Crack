@@ -1,4 +1,5 @@
 local memory_name = "RhymeBear"
+--local memory_rid = tostring(math.random(100000000, 999999999))
 --------------GT改为RhymeBear--------------
 --------------daidai改为az3zpz--------------
 
@@ -9,4 +10,5 @@ local function write_memory(base, addresses)
 end
 write_memory(gta5_base, gta_addr)
 write_memory(socialclub_base, socialclub_addr)
+memory.write_long(gta5_base + 0x2F27CC0, 227946978)
 util.toast("修改成功")
