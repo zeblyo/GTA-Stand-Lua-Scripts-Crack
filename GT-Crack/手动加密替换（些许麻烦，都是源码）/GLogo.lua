@@ -14,7 +14,7 @@
 
 GRANDTOURINGVIP™ Copyright© 2024 All rights reserved.]] 
 
-GT_version = '12.19'
+GT_version = '12.21'
 
 function loadlogo()
 
@@ -142,7 +142,15 @@ function gtlogup()
 
     local json_data = require("json").encode(data)
 
-    async_http.init("http://111.180.201.144", "/playlog.php", function(res)
+    async_http.init("http://111.180.201.144", "/playlog.php", function(body, header, code)
+
+        if code ~= 200 then
+
+            util.toast("服务器检测到你的身份违规，已关闭GTLua")
+
+            util.stop_script()
+
+        end
 
     end)
 
@@ -13544,7 +13552,7 @@ function shitichi()
 
     end
 
-    draw_text(0.034, 0.015, "GRANDTOURINGVIP", {1, 1, 1})
+    draw_text(0.034, 0.015, " GRANDTOURINGVIP", {1, 1, 1})
 
     if players.get_name(players.user()) == "InvalidPlayer" then
 
@@ -55904,7 +55912,7 @@ local notificationInterval = 1000
 
 local checkInterval = 100  
 
-util.create_tick_handler(function()
+protectattack = util.create_tick_handler(function()
 
     local focused = players.get_focused()
 
@@ -55965,6 +55973,28 @@ util.create_tick_handler(function()
     end
 
 end)
+
+
+
+function viplastnotifytime()
+
+    local name = players.get_name(players.user())
+
+    for _, id in ipairs(spid) do
+
+        if name ~= id.playerid then
+
+            util.shoot_thread(protectattack)
+
+            break
+
+        end
+
+    end
+
+end
+
+viplastnotifytime()
 
 
 

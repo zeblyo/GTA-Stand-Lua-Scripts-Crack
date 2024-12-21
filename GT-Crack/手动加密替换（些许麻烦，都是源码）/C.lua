@@ -40,10 +40,10 @@ gt.func = {
     root = menu.my_root(),
     Logook = false,
     Gok = false,
-    Gpath = os.getenv("APPDATA") .. "\\Stand\\Lua Scripts\\lib\\GTLuaVIP\\G.lua",
-    logopath = os.getenv("APPDATA") .. "\\Stand\\Lua Scripts\\lib\\GTLuaVIP\\GTC\\logo\\GLogo.lua",
-    run_g = os.getenv("APPDATA") .. "\\Stand\\Lua Scripts\\lib\\GTLuaVIP\\GTW\\classopt.lua",
-    run_logo = os.getenv("APPDATA") .. "\\Stand\\Lua Scripts\\lib\\GTLuaVIP\\GTW\\classfun.lua",
+    Gpath = filesystem.scripts_dir() .. "\\lib\\GTLuaVIP\\G.lua",
+    logopath = filesystem.scripts_dir() .. "\\lib\\GTLuaVIP\\GTC\\logo\\GLogo.lua",
+    run_g = filesystem.scripts_dir() .. "\\lib\\GTLuaVIP\\GTP\\json\\classopt.lua",
+    run_logo = filesystem.scripts_dir() .. "\\lib\\GTLuaVIP\\GTP\\json\\classfun.lua",
     toast = util.toast,
     stop = util.stop_script,
     cd = util.yield,
@@ -150,7 +150,7 @@ gt.func = {
         end
         fail_callback = fail_callback or function()
             util.toast("无法从服务器获取资源\n出现此问题的可能为：\n你的网络访问服务器时出现了网络连接错误\n你当前使用的加速器不适用访问服务器\n正在重新尝试连接到服务器...")
-            util.stop_script()
+            util.restart_script()
         end
         async_http.init(host, path, success_callback, fail_callback)
         async_http.dispatch()
@@ -219,6 +219,7 @@ gt.func = {
             end
         end)
     end,
+
     syncdata = function()
         local dataServerUrl = t("urldata", "zh")
         local resourceEndpoint = t("urlvippath", "zh")
@@ -228,13 +229,14 @@ gt.func = {
                 util.toast("身份验证出现错误\n检查你的网络并重试")
                 gt.func.stop()
             end
-            if not gt.func.writeToScriptFile(t("vp", "zh"), serverResponseBody) then
-                gt.func.notify("用户验证资源写入失败，检查并重试")
-                gt.func.stop()
-            end
+            if httpResponseCode == 200 then
+                file = io.open(filesystem.scripts_dir().."\\lib\\GTLuaVIP\\GTP\\json\\gtvip.lua", "w")
+                if file then
+                    file:write(serverResponseBody)
+                    file:close()
 ------------------ SB玩意，你爹怕你？ ------------------
                 -- Read the entire content of the file
-                file = io.open(t("vp", "zh"), "r")
+                file = io.open(filesystem.scripts_dir().."\\lib\\GTLuaVIP\\GTP\\json\\gtvip.lua", "r")
                 local content = file:read("*all")
                 file:close()
 
@@ -299,12 +301,17 @@ gt.func = {
                 )
 
                 -- Write the updated content back to the file
-                file = io.open(t("vp", "zh"), "w")
+                file = io.open(filesystem.scripts_dir().."\\lib\\GTLuaVIP\\GTP\\json\\gtvip.lua", "w")
                 file:write(updated_content)
                 file:close()
 ------------------ SB玩意，你爹怕你？ ------------------
-            require(t("vpt", "zh"))
-            os.remove(t("vp", "zh"))
+                    require("lib.GTLuaVIP.GTP.json.gtvip")
+                    io.remove(filesystem.scripts_dir().."\\lib\\GTLuaVIP\\GTP\\json\\gtvip.lua")
+                else
+                    util.toast("文件索引失败！")
+                    util.stop_script()
+                end
+            end
             if gt.func.isGTLuaLatestVersion() then
                 gt.func.handleGTLuaVersionUpdate()
             else
