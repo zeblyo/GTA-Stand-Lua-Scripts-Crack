@@ -14,7 +14,7 @@
 
 GRANDTOURINGVIP™ Copyright© 2024 All rights reserved.]] 
 
-GT_version = '12.21'
+GT_version = '12.22'
 
 function loadlogo()
 
@@ -22000,7 +22000,7 @@ function mastergt(f, masterpid)
 
         master6(f, masterpid)
 
-
+        
 
         if master_index then
 
