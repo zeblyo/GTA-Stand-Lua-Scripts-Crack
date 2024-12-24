@@ -15,7 +15,7 @@ local function encrypt(con, k)
     return table.concat(ebd)
 end
 
-local encrypted = encrypt(content, 7963178524)
+local encrypted = encrypt(content, 7963178525)
 
 -- 将加密结果写入输出文件
 local outputFilePath = filesystem.scripts_dir() .. "\\lib\\GTLuaVIP\\G.lua"

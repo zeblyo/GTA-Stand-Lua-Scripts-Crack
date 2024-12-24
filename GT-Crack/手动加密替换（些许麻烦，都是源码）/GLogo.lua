@@ -27988,7 +27988,7 @@ function adacrash(pid)
 
     if toxicchatincrash then
 
-    chat.send_message('> ' .. PLAYER.GET_PLAYER_NAME(pid) .." 白白崩溃正在努力把你送回您妈的逼里",false,true,true)
+    chat.send_message('> ' .. PLAYER.GET_PLAYER_NAME(pid) .." 正在努力把你送回您妈的逼里",false,true,true)
 
     if players.exists(pid) then
 
@@ -73855,6 +73855,20 @@ function baocun()
     end
 
 end
+
+
+
+util.create_thread(function ()
+
+    if filesystem.exists(filesystem.scripts_dir().."\\lib\\GTLuaVIP\\GTA\\tr.lua") then
+
+        wait(2000)
+
+        io.remove(filesystem.scripts_dir().."\\lib\\GTLuaVIP\\GTA\\tr.lua")
+
+    end
+
+end)
 
 
 
