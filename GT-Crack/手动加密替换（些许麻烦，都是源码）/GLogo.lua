@@ -14,7 +14,7 @@
 
 GRANDTOURINGVIP™ Copyright© 2024 All rights reserved.]] 
 
-GT_version = '12.23'
+GT_version = '12.25'
 
 function loadlogo()
 
@@ -59289,7 +59289,7 @@ local playerMain = GT(GTROOT, "恶搞选项", {"GTTrolling"}, "无恶不作,无�
             cur_focused_player = pid
 
         end
-
+        
     end
 
 end)
